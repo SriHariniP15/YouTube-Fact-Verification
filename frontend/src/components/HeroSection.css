@@ -1,0 +1,190 @@
+:root {
+  --max-width: 1100px;
+  --dominant-color: #E50914; /* Netflix Red */
+  --glass-bg: rgba(22,28,32,0.6);
+  --glass-border: rgba(255,255,255,0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* FULLSCREEN HERO - covers laptop screen (viewport) */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  overflow: hidden;
+  margin: 0;
+  border-radius: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  /* fallback color while image loads */
+  background-color: #071023;
+}
+
+/* dark vignette / overlay for readability */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  /* tweak opacity: lower = more visible image, higher = darker overlay */
+  background: linear-gradient(180deg, rgba(6,8,10,0.25) 0%, rgba(0,0,0,0.65) 100%);
+  z-index: 1;
+}
+
+/* center content */
+.container {
+  position: relative;
+  z-index: 2; /* above overlay */
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 40px 28px;
+  text-align: center;
+}
+
+/* logo + title */
+.hero__logoRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.hero__title {
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  line-height: 0.95;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -1px;
+  /* Apply a solid dominant color */
+  color: var(--dominant-color);
+  -webkit-text-fill-color: initial; /* Reset for solid color */
+  background-clip: initial; /* Reset for solid color */
+  background: none; /* Reset gradient */
+  display: inline-block;
+}
+
+/* subtitle */
+.hero__subtitle {
+  max-width: 900px;
+  margin: 30px auto 30px; /* Increased top margin for more space */
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.5;
+}
+
+/* form - glass input and button */
+.hero__form {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.hero__inputGroup {
+  width: 86%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px) saturate(120%);
+}
+
+/* input */
+.hero__input {
+  flex: 1 1 auto;
+  min-height: 56px;
+  border: none;
+  outline: none;
+  padding: 14px 16px;
+  font-size: 1.05rem;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+}
+
+.hero__input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+/* call to action button */
+.hero__btn {
+  min-width: 150px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  /* Apply a solid dominant color */
+  background: var(--dominant-color);
+  color: white;
+  box-shadow: 0 8px 24px var(--dominant-color); /* use dominant color for a matching shadow */
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.hero__btn:active {
+  transform: translateY(1px);
+}
+.hero__btn:hover {
+  box-shadow: 0 14px 40px var(--dominant-color);
+}
+
+/* small features row */
+.hero__features {
+  margin-top: 18px;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  color: rgba(255,255,255,0.82);
+  font-size: 0.95rem;
+}
+
+/* screen-reader only helpers */
+.sr-only {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+/* responsive tweaks */
+@media (max-width: 760px) {
+  .hero__inputGroup {
+    width: 94%;
+    gap: 10px;
+    padding: 10px;
+  }
+  .hero__btn {
+    min-width: 120px;
+    padding: 12px;
+  }
+  .hero__features {
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .hero {
+    height: auto;
+    padding: 40px 0;
+  } /* allow hero to grow on small screens */
+}
