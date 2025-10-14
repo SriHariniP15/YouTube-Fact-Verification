@@ -1,7 +1,8 @@
 // src/components/Signup.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import { auth, createUserWithEmailAndPassword } from "../firebase"; // Import Firebase auth
+import "./Login.css"; // Make sure this CSS import is here and correct
 
 const initialState = { name: "", email: "", password: "", confirmPassword: "" };
 
@@ -17,11 +18,10 @@ export default function Signup() {
   };
 
   const validate = () => {
-    const { name, email, password, confirmPassword } = form;
-    if (!name.trim() || !email.trim() || !password) {
-      return "All fields are required.";
+    const { email, password, confirmPassword } = form;
+    if (!email.trim() || !password) {
+      return "Email and password are required.";
     }
-    // simple email regex (not exhaustive)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) return "Please enter a valid email address.";
     if (password.length < 6) return "Password must be at least 6 characters.";
@@ -41,99 +41,73 @@ export default function Signup() {
     setError("");
 
     try {
-      // Example POST - change URL to your backend endpoint
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          email: form.email.trim(),
-          password: form.password,
-        }),
-      });
+      // Use Firebase to create a new user
+      await createUserWithEmailAndPassword(auth, form.email, form.password);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        // data.message expected from backend
-        setError(data.message || "Signup failed. Try again.");
-        setLoading(false);
-        return;
-      }
-
-      // success — optionally show message then redirect to login
-      alert("Signup successful. Please login.");
-      navigate("/login"); // redirect to login page
+      alert("Signup successful! Please proceed to login.");
+      navigate("/"); // Redirect to the login page
     } catch (err) {
-      console.error(err);
-      setError("Network error. Please try again.");
+      // Handle Firebase errors (e.g., email-already-in-use)
+      setError(err.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="signup-container">
-      <form className="signup-form" onSubmit={handleSubmit}>
-        <h2>Create account</h2>
+    // Note: We use the styles from Login.css here
+    <div className="login-container"> 
+      <div className="login-box"> {/* Reusing login-box for consistent styling */}
+        <form className="signup-form" onSubmit={handleSubmit}>
+          <h2>Create Account</h2>
 
-        {error && <div className="form-error">{error}</div>}
+          {error && <div className="form-error">{error}</div>}
 
-        <label>
-          Name
-          <input
-            name="name"
-            value={form.name}
-            onChange={onChange}
-            placeholder="Your full name"
-            required
-          />
-        </label>
+          <div className="input-group">
+            <label>Email</label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={onChange}
+              placeholder="name@example.com"
+              required
+            />
+          </div>
 
-        <label>
-          Email
-          <input
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={onChange}
-            placeholder="name@example.com"
-            required
-          />
-        </label>
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={onChange}
+              placeholder="At least 6 characters"
+              required
+            />
+          </div>
 
-        <label>
-          Password
-          <input
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={onChange}
-            placeholder="At least 6 characters"
-            required
-          />
-        </label>
+          <div className="input-group">
+            <label>Confirm Password</label>
+            <input
+              name="confirmPassword"
+              type="password"
+              value={form.confirmPassword}
+              onChange={onChange}
+              placeholder="Re-enter password"
+              required
+            />
+          </div>
 
-        <label>
-          Confirm Password
-          <input
-            name="confirmPassword"
-            type="password"
-            value={form.confirmPassword}
-            onChange={onChange}
-            placeholder="Re-enter password"
-            required
-          />
-        </label>
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Signing up..." : "Sign Up"}
+          </button>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Signing up..." : "Sign up"}
-        </button>
-
-        <p className="small">
-          Already have an account? <a href="/login">Login</a>
-        </p>
-      </form>
+          <p className="signup-link">
+            Already have an account? <a href="/">Login</a>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

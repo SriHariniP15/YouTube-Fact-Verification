@@ -1,11 +1,26 @@
+/* src/components/Navbar.css */
 
 .navbar {
+  /* These properties make the navbar stick to the top */
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Keeps it on top of all other content */
+  box-sizing: border-box;
+
+  /* Your existing styling */
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background: linear-gradient(to bottom, #1a1a1d, #0f0612); /* blends with downside */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(to bottom, #1a1a1d, #0f0612);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-logo-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .navbar-logo {
@@ -13,29 +28,30 @@
   align-items: center;
 }
 
-.logo img {
+.navbar-logo img {
   width: 50px;
   height: 50px;
-  margin-right: 15px; /* Adjusted spacing */
+  margin-right: 15px;
 }
 
 .navbar-logo h1 {
-  font-family: 'Orbitron'; /* A clean, modern font  'Bebas Neue', sans-serif */
+  font-family: 'Orbitron', sans-serif;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #00e5ff; /* A light off-white that contrasts well with the navy */
+  color: #00e5ff;
 }
 
 .navbar-links {
   list-style: none;
   display: flex;
-  gap: 30px; /* Increased gap between links */
+  gap: 30px;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
 .navbar-links a {
-  color: #bdc3c7; /* A subtle, muted silver for the links */
+  color: #bdc3c7;
   text-decoration: none;
   font-size: 1.1rem;
   font-weight: 500;
@@ -43,22 +59,20 @@
 }
 
 .navbar-links a:hover {
-  color: #3498db; /* A vibrant, eye-catching blue on hover */
+  color: #3498db;
 }
-
-
-
 
 .logout-btn {
   background: transparent;
   border: none;
   color: #fff;
   cursor: pointer;
-  transition: 0.3s;
+  transition: color 0.3s;
   font-size: 1.1rem;
   font-weight: 500;
+  font-family: inherit;
 }
 
 .logout-btn:hover {
-  color: red;
+  color: #ff4d4d;
 }
