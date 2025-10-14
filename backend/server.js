@@ -5,6 +5,8 @@ const { google } = require('googleapis');
 const { getSubtitles } = require('youtube-captions-scraper');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+//avbe
+
 // --- Initialize API Clients ---
 if (!process.env.API_KEY || !process.env.GEMINI_API_KEY) {
   console.error("FATAL ERROR: API keys are not defined in the .env file.");
