@@ -108,6 +108,7 @@ function AboutSection() {
           <h2 className="section-title">Helpful Resources</h2>
           <p>You can use these resources to verify claims and stay informed.</p>
           <div className="resource-links">
+            <a href="https://www.wikipedia.com" target="_blank" rel="noopener noreferrer">Wikipedia</a>
             <a href="https://www.snopes.com" target="_blank" rel="noopener noreferrer">Snopes</a>
             <a href="https://www.factcheck.org" target="_blank" rel="noopener noreferrer">FactCheck.org</a>
             <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">YouTube</a>

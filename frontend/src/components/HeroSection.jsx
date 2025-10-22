@@ -12,35 +12,77 @@ const StarRating = () => {
         const ratingValue = index + 1;
         return (
           <button
-            type="button" key={index}
+            type="button"
+            key={index}
             className={ratingValue <= (hover || rating) ? 'on' : 'off'}
             onClick={() => setRating(ratingValue)}
             onMouseEnter={() => setHover(ratingValue)}
             onMouseLeave={() => setHover(rating)}
             aria-label={`Rate ${ratingValue} out of 5 stars`}
-          ><span className="star">&#9733;</span></button>
+          >
+            <span className="star">&#9733;</span>
+          </button>
         );
       })}
     </div>
   );
 };
 
-const FeedbackSection = () => (
-  <div className="feedback-section">
-    <div className="feedback-query">
-      <span>Was this analysis helpful?</span>
-      <div className="feedback-buttons">
-        <button className="feedback-btn">👍 Helpful</button>
-        <button className="feedback-btn">👎 Not Helpful</button>
-        <button className="feedback-btn">🔗 Share</button>
+const FeedbackSection = ({ resultsUrl }) => {
+  const [message, setMessage] = useState('');
+
+  const handleFeedbackClick = (type) => {
+    if (type === 'helpful') {
+      setMessage('Thanks for your feedback! 😊');
+    } else if (type === 'notHelpful') {
+      setMessage('Thanks! We will try to improve. 😔');
+    }
+  };
+
+  const handleShareClick = async () => {
+    if (navigator.share) {
+      // Use Web Share API if available
+      try {
+        await navigator.share({
+          title: 'Check out this analysis',
+          text: 'I found this YouTube video fact-check interesting!',
+          url: resultsUrl,
+        });
+        setMessage('Result shared successfully! 🚀');
+      } catch (err) {
+        console.error(err);
+        setMessage('Sharing failed. 😕');
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(resultsUrl);
+        setMessage('Result URL copied to clipboard! 📋');
+      } catch (err) {
+        console.error(err);
+        setMessage('Could not copy to clipboard. 😕');
+      }
+    }
+  };
+
+  return (
+    <div className="feedback-section">
+      <div className="feedback-query">
+        <span>Was this analysis helpful?</span>
+        <div className="feedback-buttons">
+          <button className="feedback-btn" onClick={() => handleFeedbackClick('helpful')}>👍 Helpful</button>
+          <button className="feedback-btn" onClick={() => handleFeedbackClick('notHelpful')}>👎 Not Helpful</button>
+          <button className="feedback-btn" onClick={handleShareClick}>🔗 Share</button>
+        </div>
       </div>
+      <div className="feedback-rating">
+        <span>Leave a rating:</span>
+        <StarRating />
+      </div>
+      {message && <div className="feedback-message">{message}</div>}
     </div>
-    <div className="feedback-rating">
-      <span>Leave a rating:</span>
-      <StarRating />
-    </div>
-  </div>
-);
+  );
+};
 
 const getStatusIcon = (status) => {
   switch (status.toLowerCase()) {
@@ -58,7 +100,6 @@ function HeroSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState(null);
 
-  // --- UPDATED FUNCTION TO CALL THE BACKEND ---
   const handleVerify = async (e) => {
     e.preventDefault();
     if (!url) return;
@@ -66,27 +107,19 @@ function HeroSection() {
     setResults(null);
 
     try {
-      // Make a real request to your backend API
       const response = await fetch('http://localhost:5000/api/verify', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoUrl: url }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
       const data = await response.json();
-      
-      // Update state with the real results from the backend
       setResults(data.results);
 
     } catch (error) {
       console.error('Failed to verify:', error);
-      // Display an error message to the user if the fetch fails
       setResults([{
         claim: "Verification Failed",
         status: "Error",
@@ -130,7 +163,7 @@ function HeroSection() {
               </div>
             </div>
           ))}
-          <FeedbackSection />
+          <FeedbackSection resultsUrl={window.location.href} />
         </section>
       )}
     </>
