@@ -31,7 +31,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
       {/* ADDED the onClick handler to the Link */}
       <Link to="/" className="navbar-logo-link" onClick={handleScrollToTop}>
         <div className="navbar-logo">
-          <img src="/logo2.png" alt="Logo" />
+          <img src="/Logo.jpeg" alt="Logo" />
           <h1>YouTube Fact Verifier</h1>
         </div>
       </Link>

@@ -15,7 +15,7 @@ function Verify() {
     const videoId = videoLink.split("v=")[1]?.split("&")[0] || videoLink;
 
     try {
-      const response = await fetch("http://localhost:5000/api/verify", {
+      const response = await fetch("http:D//localhost:5000/api/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoId }),
