@@ -20,7 +20,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, {
 });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.use(cors());
 app.use(express.json());
 
@@ -46,41 +46,34 @@ function getVideoId(url) {
 async function extractClaimsWithGemini(text) {
   try {
     console.log("Attempting to extract claims with Gemini...");
-    // 💡 UPDATED: Changed model name to 'gemini-2.5-pro'
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
-    const prompt = `Analyze the following text from a video and extract specific, verifiable factual claims. Focus on:
-1. Statistical claims or numbers
-2. Historical events or dates
-3. Scientific or medical statements
-4. Claims about people, organizations, or events
-5. Statements that can be proven true or false
-
-Format each claim to be more general and searchable. Return ONLY a valid JSON array of strings. For example: ["Global temperatures increased by 1.5°C since 1900", "COVID-19 vaccines reduce hospitalization risk"]. If there are no factual claims, return an empty array []. Do not include any other text or markdown. 
-
-Text: "${text}"`;
+    // Use gemini-1.5-flash for speed and reliability
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' }); 
     
+    const prompt = `Analyze the following text from a video and extract specific, verifiable factual claims. 
+    Return ONLY a valid JSON array of strings. 
+    Example: ["The moon is 384,400 km away", "Water boils at 100 degrees Celsius"].
+    If no claims found, return [].
+    
+    Text: "${text}"`;
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let rawResponse = response.text();
-    
-    console.log("--- Gemini Raw Response ---");
-    console.log(rawResponse);
-    console.log("---------------------------");
 
-    const jsonResponse = rawResponse.replace(/```json|```/g, '').trim();
-    
+    // CLEANING LOGIC: Extract only the content between [ and ]
+    const jsonMatch = rawResponse.match(/\[[\s\S]*\]/);
+    const jsonResponse = jsonMatch ? jsonMatch[0] : "[]";
+
     try {
       const claims = JSON.parse(jsonResponse);
       console.log(`Successfully parsed ${claims.length} claims.`);
       return claims;
     } catch (parseError) {
-      console.error("ERROR: Failed to parse Gemini response into JSON.", parseError);
+      console.error("Failed to parse Gemini response. Raw response was:", rawResponse);
       return [];
     }
   } catch (error) {
-    console.error("FATAL ERROR during Gemini API call:", error);
-    if (error.status) console.error(`Status: ${error.status}, StatusText: ${error.statusText}`);
-    if (error.errorDetails) console.error("Details:", error.errorDetails);
+    console.error("FATAL ERROR during Gemini API call:", error.message);
     return [];
   }
 }
@@ -151,4 +144,4 @@ app.post('/api/verify', async (req, res) => {
     res.status(500).json({ error: 'An unexpected error occurred on the server.' });
   }
 });
-app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
